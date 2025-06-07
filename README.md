@@ -13,11 +13,11 @@ Download Optio from <https://bitbucket.org/barbee/optio/downloads>.
 
 Optio is licensed under [Mozilla Public License v 2.0](http://mozilla.org/MPL/2.0/)
 
-Optio is written by [JH Barbee](http://www.linkedin.com/in/jhbarbee)
+Optio is written by [Huxley Barbee](http://www.linkedin.com/in/jhbarbee)
 
 # Version
 
-The current version is 1.2.
+The current version is 1.21.
 
 # Platforms
 
