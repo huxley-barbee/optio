@@ -1,3 +1,9 @@
+![Build](https://github.com/huxley-barbee/optio/actions/workflows/ci.yml/badge.svg)
+![ShellCheck](https://img.shields.io/badge/lint-shellcheck-brightgreen)
+![License: MPL 2.0](https://img.shields.io/badge/license-MPL%202.0-blue)
+![Shell: Bash 3+](https://img.shields.io/badge/shell-bash%203%2B-blue)
+![Downloads](https://img.shields.io/github/downloads/huxley-barbee/optio/total)
+
 # Overview
 
 Optio is a framework to create terminal menus in bash. 
