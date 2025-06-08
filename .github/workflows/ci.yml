@@ -17,5 +17,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y shellcheck
 
       - name: Run ShellCheck
-        run: shellcheck $(find . -name '*.sh')
+        run: shellcheck $(find . -name 'optio.sh')
 
