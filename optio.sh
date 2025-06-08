@@ -342,8 +342,8 @@ function item.addCommand() {
 }
 
 function dump() {
-    echo items ${#items[@]} ${items[@]}
-    echo command ${#commands[@]} ${commands[@]}
+    echo items ${#items[@]} "${items[@]}"
+    echo command ${#commands[@]} "${commands[@]}"
 }
 
 function trim() {
@@ -671,7 +671,7 @@ function cleanStateFile() {
 
 }
 
-parseArguments $@
+parseArguments "$@"
 readConfiguration
 cleanStateFile
 if test $OPTIO_VERBOSE -eq 1;
