@@ -269,7 +269,6 @@ function item.getIndexByName() {
 function item.new() {
     local menuName=$1
     local itemName=$2
-    local menuIndex
 
     if test -z "$menuName" -o -z "$itemName";
     then
@@ -317,9 +316,8 @@ function item.addCommand() {
     shift
     local itemName=$1
     shift
-    local command=$@
+    local command=$1
     local itemIndex
-    local special=0
 
     if test -z "$command" -o -z "$itemName" -o -z "$menuName";
     then
@@ -347,7 +345,7 @@ function dump() {
 }
 
 function trim() {
-    local var=$@
+    local var=$1
 
     # leading whitespace characters
     var="${var#"${var%%[![:space:]]*}"}"
@@ -502,7 +500,8 @@ function readConfiguration() {
 # This usage does trouble me, but not enough to keep me up at night.
 # - May 16, 2013. jhb.
 function returnArray() {
-    local declareString=$( declare -p $1 )
+    local declareString
+    declareString=$( declare -p $1 )
     local var=$2
 
     declareString=${declareString#declare\ -a\ *=}
@@ -516,7 +515,6 @@ function menu.getItems() {
     local returnVar=$2
     local -a results
     local index=0
-    local menuIndex
 
     # Plus one for the dot in menu.item.
     local length=$(( ${#menuName} + 1 ))
@@ -542,13 +540,13 @@ function showMenu() {
     local level=${2-0}
     local run=1
 
-    eval $( menu.getItems $menuName displayItems )
+    eval "$( menu.getItems $menuName displayItems )"
 
     # If this is not the top level menu, add a menu item 
     # that allows the user to go back to the previous menu.
     if test $level -gt 0;
     then
-        displayItems+=( ${OPTIO_BACK} )
+        displayItems+=( "${OPTIO_BACK}" )
     fi
 
     PS3=${OPTIO_PROMPT}
@@ -566,7 +564,7 @@ function showMenu() {
         echo ${OPTIO_BANNER}
         echo ""
 
-        select choice in ${displayItems[*]}
+        select choice in "${displayItems[@]}"
         do
             local itemIndex
             local command
