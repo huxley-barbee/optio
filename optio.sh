@@ -259,7 +259,7 @@ function item.getIndexByName() {
         then
             return $index
         fi
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
     done
 
     die "Referencing an invalid menu or menu item '${name}'."
@@ -296,7 +296,7 @@ function endsWith() {
         return 0
     fi
 
-    start=$(( ${#this} - $length ))
+    start=$(( ${#this} - length ))
 
     if test $start -lt 0;
     then
@@ -327,13 +327,13 @@ function item.addCommand() {
     item.getIndexByName "$menuName" "$itemName"
     itemIndex=$?
 
-    commands[$itemIndex]+="${command}"
+    commands[itemIndex]+="${command}"
 
     if test "${command:0:5}" != "menu:";
     then
         if test "${command:0:9}" != "optioExit";
         then
-            commands[$itemIndex]+=$'\n'
+            commands[itemIndex]+=$'\n'
         fi
     fi
 
@@ -389,7 +389,7 @@ function readConfiguration() {
         fi
 
         lines[index]=$line
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
 
     done < "$OPTIO_CONF"
 
@@ -409,7 +409,7 @@ function readConfiguration() {
             eval "$line"
         fi
 
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
 
         if test $end -eq 1;
         then
@@ -459,11 +459,11 @@ function readConfiguration() {
 
         fi
                 
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
         
     done
 
-    index=$(( $index + 1 ))
+    index=$(( index + 1 ))
 
     while test $index -lt ${#lines[@]};
     do
@@ -472,7 +472,7 @@ function readConfiguration() {
         scriptletLibrary+=$line
         scriptletLibrary+=$'\n'
 
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
     done
 
 }
@@ -528,7 +528,7 @@ function menu.getItems() {
         then
             results+=( "${items[$index]:$length}" )
         fi
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
     done
 
     returnArray results "$returnVar"
@@ -593,7 +593,7 @@ function showMenu() {
             elif test "${command:0:5}" == "menu:";
             then
                 # User has to requested to go to a submenu.
-                showMenu "${command:5}" $(( $level + 1 ))
+                showMenu "${command:5}" $(( level + 1 ))
             else
                 # Run a command in a sub shell.
                 stdin=/dev/stdin
@@ -615,11 +615,11 @@ function killChildren() {
 function killChildrenOf() {
     local parentPid=$1
 
-    count=`ps --ppid "$parentPid" | wc -l`
+    count=$( ps --ppid "$parentPid" | wc -l )
 
-    count=`expr "$count" - 1`
+    count=$(( "$count" - 1 ))
 
-    for childPid in `ps --ppid "$parentPid" | tail -"${count}" | awk '{print $1}'`
+    for childPid in $( ps --ppid "$parentPid" | tail -"${count}" | awk '{print $1}' )
     do
         killChildrenOf "$childPid"
         kill -9 "$childPid" 2> /dev/null
@@ -645,13 +645,13 @@ function cleanStateFile() {
     do
 
         lines[index]=$line
-        index=$(( $index + 1 ))
+        index=$(( index + 1 ))
 
     done < "$OPTIO_STATE"
 
     length=${#lines[@]}
 
-    begin=$(( $length - ${OPTIO_STATE_LIMIT} ))
+    begin=$(( length - OPTIO_STATE_LIMIT ))
 
     # Number of lines < $OPTIO_STATE_LIMIT.
     # Bail.
@@ -663,7 +663,7 @@ function cleanStateFile() {
     echo "" > "$OPTIO_STATE"
 
     # Write only the last $OPTIO_STATE_LIMIT lines to the $OPTIO_STATE file.
-    for (( index=$begin; $index < ${#lines[@]}; index++ ));
+    for (( index=begin; index < ${#lines[@]}; index++ ));
     do
         echo "${lines[$index]}" >> "$OPTIO_STATE"
     done
