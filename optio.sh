@@ -27,7 +27,7 @@ declare DEFAULT_NO_LOWER='n'
 declare OPTIO_CONF
 declare OPTIO_STATE
 
-declare OPTIO_VERSION='1.21'
+declare OPTIO_VERSION='1.3'
 
 # The data structures. Using parallel array since
 # bash 3 doesn't have associative arrays.
