@@ -74,7 +74,7 @@ function optioAskValue() {
             echo -n "[${!resultVar}] "
         fi
 
-        read answer
+        read -r answer
 
         if test -z "$answer" -a -n "${!resultVar}";
         then
@@ -84,8 +84,8 @@ function optioAskValue() {
     done
 
     # But there is no indirect reference to write a variable
-    eval $resultVar="\"$answer\""
-    echo "${resultVar}=\"${!resultVar}\"" >> $OPTIO_STATE
+    eval "$resultVar"="\"$answer\""
+    echo "${resultVar}=\"${!resultVar}\"" >> "$OPTIO_STATE"
 
 }
 
@@ -112,10 +112,10 @@ function optioAskYesNo() {
         # ${! is an indirect reference to read a variable.
         if test -n "${!resultVar}";
         then
-            if test ${!resultVar} -eq 1;
+            if test "${!resultVar}" -eq 1;
             then
                 echo -n " [${OPTIO_YES_UPPER}/${OPTIO_NO_LOWER}] "
-            elif test ${!resultVar} -eq 0;
+            elif test "${!resultVar}" -eq 0;
             then
                 echo -n " [${OPTIO_YES_LOWER}/${OPTIO_NO_UPPER}] "
             else
@@ -126,11 +126,11 @@ function optioAskYesNo() {
             echo -n " [${OPTIO_YES_LOWER}/${OPTIO_NO_LOWER}] "
         fi
 
-        read answer
+        read -r answer
 
         if test -z "$answer" -a -n "${!resultVar}";
         then
-            if test ${!resultVar} -eq 0;
+            if test "${!resultVar}" -eq 0;
             then
                 answer=${OPTIO_NO_LOWER}
             else
@@ -143,13 +143,13 @@ function optioAskYesNo() {
         if test "${answer-x}" == "${OPTIO_YES_LOWER}" -o "${answer-x}" == "${OPTIO_YES_UPPER}";
         then
             # But there is no indirect reference to write a variable
-            eval $resultVar=1
-            echo "${resultVar}=1" >> $OPTIO_STATE
+            eval "$resultVar"=1
+            echo "${resultVar}=1" >> "$OPTIO_STATE"
             return 0
         elif test "${answer-x}" == "${OPTIO_NO_LOWER}" -o "${answer-x}" == "${OPTIO_NO_UPPER}";
         then
-            eval $resultVar=0
-            echo "${resultVar}=0" >> $OPTIO_STATE
+            eval "$resultVar"=0
+            echo "${resultVar}=0" >> "$OPTIO_STATE"
             return 0
         fi
 
@@ -178,8 +178,8 @@ function usage() {
 # 
 # Arguments: None
 function optioHitContinue() {
-    echo ${OPTIO_CONTINUE}
-    read
+    echo "${OPTIO_CONTINUE}"
+    read -r
 }
 
 function parseArguments() {
@@ -202,7 +202,7 @@ function parseArguments() {
                     ;;
                 V)
                     echo "Optio Menu Framework version ${OPTIO_VERSION}."
-                    read
+                    read -r
                     ;;
                 f)
                     OPTIO_CONF=$OPTARG
@@ -222,22 +222,22 @@ function parseArguments() {
     done
 
     # Make sure all our configuration variables are set.
-    echo ${OPTIO_CONF:=$DEFAULT_CONF}
-    echo ${OPTIO_STATE:=$DEFAULT_STATE}
-    echo ${OPTIO_BANNER:=$DEFAULT_BANNER}
-    echo ${OPTIO_PROMPT:=$DEFAULT_PROMPT}
-    echo ${OPTIO_BACK:=$DEFAULT_BACK}
-    echo ${OPTIO_CONTINUE:=$DEFAULT_CONTINUE}
-    echo ${OPTIO_STATE_LIMIT:=$DEFAULT_STATE_LIMIT}
-    echo ${OPTIO_YES_LOWER:=$DEFAULT_YES_LOWER}
-    echo ${OPTIO_YES_UPPER:=$DEFAULT_YES_UPPER}
-    echo ${OPTIO_NO_LOWER:=$DEFAULT_NO_UPPER}
-    echo ${OPTIO_NO_UPPER:=$DEFAULT_NO_LOWER}
+    echo "${OPTIO_CONF:=$DEFAULT_CONF}"
+    echo "${OPTIO_STATE:=$DEFAULT_STATE}"
+    echo "${OPTIO_BANNER:=$DEFAULT_BANNER}"
+    echo "${OPTIO_PROMPT:=$DEFAULT_PROMPT}"
+    echo "${OPTIO_BACK:=$DEFAULT_BACK}"
+    echo "${OPTIO_CONTINUE:=$DEFAULT_CONTINUE}"
+    echo "${OPTIO_STATE_LIMIT:=$DEFAULT_STATE_LIMIT}"
+    echo "${OPTIO_YES_LOWER:=$DEFAULT_YES_LOWER}"
+    echo "${OPTIO_YES_UPPER:=$DEFAULT_YES_UPPER}"
+    echo "${OPTIO_NO_LOWER:=$DEFAULT_NO_UPPER}"
+    echo "${OPTIO_NO_UPPER:=$DEFAULT_NO_LOWER}"
 
 }
 
 function die() {
-    echo $1 >&2
+    echo "$1" >&2
     kill -9 $$
 }
 
@@ -255,7 +255,7 @@ function item.getIndexByName() {
 
     while test $index -lt ${#items[@]};
     do
-        if test $name == ${items[$index]};
+        if test "$name" == "${items[$index]}";
         then
             return $index
         fi
@@ -291,7 +291,7 @@ function endsWith() {
     local length=${#with}
     local start
 
-    if test ${#this} -lt $length;
+    if test ${#this} -lt "$length";
     then
         return 0
     fi
@@ -324,7 +324,7 @@ function item.addCommand() {
         die "Either command '${command} or item name '$itemName} not specified."
     fi
 
-    item.getIndexByName $menuName $itemName
+    item.getIndexByName "$menuName" "$itemName"
     itemIndex=$?
 
     commands[$itemIndex]+="${command}"
@@ -362,7 +362,7 @@ function readConfiguration() {
     local currentItem
     local index=0
 
-    if test  ! -r $OPTIO_CONF ;
+    if test  ! -r "$OPTIO_CONF" ;
     then
         die "The configuration file '${OPTIO_CONF}' is not readable."
     fi
@@ -370,7 +370,7 @@ function readConfiguration() {
     declare -a lines
 
     # Read all the lines into an array first.
-    while read line;
+    while read -r line;
     do
 
         if test -z "$line";
@@ -378,12 +378,12 @@ function readConfiguration() {
             continue
         fi
 
-        line=$( trim $line )
+        line=$( trim "$line" )
 
         if test -z "$line";
         then
             continue
-        elif test ${line:0:1} == '#';
+        elif test "${line:0:1}" == '#';
         then
             continue
         fi
@@ -391,7 +391,7 @@ function readConfiguration() {
         lines[index]=$line
         index=$(( $index + 1 ))
 
-    done < $OPTIO_CONF
+    done < "$OPTIO_CONF"
 
     # Parse through the optio global variables first.
     # We know when to stop when we see '@@@'.
@@ -401,12 +401,12 @@ function readConfiguration() {
         local line=${lines[$index]}
         local end=0
 
-        if test ${line:0:3} == '@@@';
+        if test "${line:0:3}" == '@@@';
         then
             end=1
 
         else
-            eval $line
+            eval "$line"
         fi
 
         index=$(( $index + 1 ))
@@ -429,7 +429,7 @@ function readConfiguration() {
     do
         local line=${lines[$index]}
 
-        if test ${line:0:3} == '@@@';
+        if test "${line:0:3}" == '@@@';
         then
             break
         fi
@@ -437,14 +437,14 @@ function readConfiguration() {
 
         local first=${line:0:1}
 
-        if test $first  == '=';
+        if test "$first"  == '=';
         then
             # Found a menu.
-            currentMenu=$( trim ${line:1} )
-        elif test $first == '+';
+            currentMenu=$( trim "${line:1}" )
+        elif test "$first" == '+';
         then
             # Found an item.
-            currentItem=$( trim ${line:1} )
+            currentItem=$( trim "${line:1}" )
             item.new "$currentMenu" "$currentItem"
         else
 
@@ -455,7 +455,7 @@ function readConfiguration() {
                 die "Found orphan command ${line}."
             fi
 
-            item.addCommand "$currentMenu" "$currentItem" $line
+            item.addCommand "$currentMenu" "$currentItem" "$line"
 
         fi
                 
@@ -501,12 +501,12 @@ function readConfiguration() {
 # - May 16, 2013. jhb.
 function returnArray() {
     local declareString
-    declareString=$( declare -p $1 )
+    declareString=$( declare -p "$1" )
     local var=$2
 
     declareString=${declareString#declare\ -a\ *=}
     declareString="declare -a $var=$declareString"
-    echo $declareString
+    echo "$declareString"
 }
 
 function menu.getItems() {
@@ -524,14 +524,14 @@ function menu.getItems() {
 
         # Here we're looking for any menu item with a prefix of
         # "<menu name>.".
-        if test ${items[$index]:0:$length} == "${menuName}.";
+        if test "${items[$index]:0:$length}" == "${menuName}.";
         then
             results+=( "${items[$index]:$length}" )
         fi
         index=$(( $index + 1 ))
     done
 
-    returnArray results $returnVar
+    returnArray results "$returnVar"
 }
 
 function showMenu() {
@@ -540,11 +540,11 @@ function showMenu() {
     local level=${2-0}
     local run=1
 
-    eval "$( menu.getItems $menuName displayItems )"
+    eval "$( menu.getItems "$menuName" displayItems )"
 
     # If this is not the top level menu, add a menu item 
     # that allows the user to go back to the previous menu.
-    if test $level -gt 0;
+    if test "$level" -gt 0;
     then
         displayItems+=( "${OPTIO_BACK}" )
     fi
@@ -559,9 +559,9 @@ function showMenu() {
             clear
         fi
 
-        source $OPTIO_STATE
+        source "$OPTIO_STATE"
 
-        echo ${OPTIO_BANNER}
+        echo "${OPTIO_BANNER}"
         echo ""
 
         select choice in "${displayItems[@]}"
@@ -572,12 +572,12 @@ function showMenu() {
             if test -z "$choice";
             then
                 continue
-            elif test $choice == "${OPTIO_BACK}";
+            elif test "$choice" == "${OPTIO_BACK}";
             then
                 return 0
             fi
 
-            item.getIndexByName $menuName $choice
+            item.getIndexByName "$menuName" "$choice"
             itemIndex=$?
             command=${commands[$itemIndex]}
 
@@ -593,10 +593,11 @@ function showMenu() {
             elif test "${command:0:5}" == "menu:";
             then
                 # User has to requested to go to a submenu.
-                showMenu ${command:5} $(( $level + 1 ))
+                showMenu "${command:5}" $(( $level + 1 ))
             else
                 # Run a command in a sub shell.
-                ( source /dev/stdin <<< $scriptletLibrary; IFS=$DEFAULT_IFS eval $command )
+                stdin=/dev/stdin
+                ( source "$stdin" <<< "$scriptletLibrary"; IFS=$DEFAULT_IFS eval "$command" )
             fi
 
             break
@@ -614,14 +615,14 @@ function killChildren() {
 function killChildrenOf() {
     local parentPid=$1
 
-    count=`ps --ppid $parentPid | wc -l`
+    count=`ps --ppid "$parentPid" | wc -l`
 
-    count=`expr $count - 1`
+    count=`expr "$count" - 1`
 
-    for childPid in `ps --ppid $parentPid | tail -${count} | awk '{print $1}'`
+    for childPid in `ps --ppid "$parentPid" | tail -"${count}" | awk '{print $1}'`
     do
-        killChildrenOf $childPid
-        kill -9 $childPid 2> /dev/null
+        killChildrenOf "$childPid"
+        kill -9 "$childPid" 2> /dev/null
     done
 }
 
@@ -633,20 +634,20 @@ function cleanStateFile() {
     local index=0
 
     # Initialize the state file if we don't already have one.
-    if test ! -r $OPTIO_STATE;
+    if test ! -r "$OPTIO_STATE";
     then
-        echo "" > $OPTIO_STATE
+        echo "" > "$OPTIO_STATE"
         return 0
     fi
 
     # Figure out how many lines there are.
-    while read line;
+    while read -r line;
     do
 
         lines[index]=$line
         index=$(( $index + 1 ))
 
-    done < $OPTIO_STATE
+    done < "$OPTIO_STATE"
 
     length=${#lines[@]}
 
@@ -659,12 +660,12 @@ function cleanStateFile() {
         return 0
     fi
 
-    echo "" > $OPTIO_STATE
+    echo "" > "$OPTIO_STATE"
 
     # Write only the last $OPTIO_STATE_LIMIT lines to the $OPTIO_STATE file.
     for (( index=$begin; $index < ${#lines[@]}; index++ ));
     do
-        echo ${lines[$index]} >> $OPTIO_STATE
+        echo "${lines[$index]}" >> "$OPTIO_STATE"
     done
 
 }
@@ -675,8 +676,8 @@ cleanStateFile
 if test $OPTIO_VERBOSE -eq 1;
 then
     dump
-    read
+    read -r
 fi
-source $OPTIO_STATE
+source "$OPTIO_STATE"
 showMenu root
 cleanStateFile
